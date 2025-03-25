@@ -89,25 +89,29 @@ def main():
     selected_company = st.sidebar.selectbox("Select a Company", nifty50_companies)
     
     data = download_data(selected_company, start_date, end_date)
-    data = preprocess_data(data)
-    data = create_features(data)
-    data = calculate_volatility(data)
     
-    st.subheader("Stock Data")
-    st.write(data)
-    
-    if st.button("Train Model"):
-        model, X_test, y_test = train_model(data)
-        predictions = make_predictions(model, X_test)
-        display_results(predictions, y_test)
+    if not data.empty:
+        data = preprocess_data(data)
+        data = create_features(data)
+        data = calculate_volatility(data)
+        
+        st.subheader("Stock Data")
+        st.write(data)
 
-        # Only plot after predictions
-        plot_live_line_chart(data)
+        if st.button("Train Model"):
+            model, X_test, y_test = train_model(data)
+            predictions = make_predictions(model, X_test)
+            display_results(predictions, y_test)
 
-    # Display risk classification
-    risk_classification = classify_risk(data['Volatility'].iloc[-1])
-    st.sidebar.subheader("Risk Classification")
-    st.sidebar.write(f"The risk of {selected_company} is {risk_classification}-risk.")
+            # Only plot after predictions
+            plot_live_line_chart(data)
+
+        # Display risk classification
+        risk_classification = classify_risk(data['Volatility'].iloc[-1])
+        st.sidebar.subheader("Risk Classification")
+        st.sidebar.write(f"The risk of {selected_company} is classified as {risk_classification}-risk.")
+    else:
+        st.sidebar.error("No data available for the selected ticker and date range.")
 
 # Run the main function
 if __name__ == "__main__":
