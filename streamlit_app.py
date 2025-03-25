@@ -54,7 +54,7 @@ def make_predictions(model, X_test):
 
 # Function to display results
 def display_results(predictions, y_test):
-    results = pd.DataFrame({'Actual': y_test, 'Predicted': predictions})
+    results = pd.DataFrame({'Actual': y_test.values, 'Predicted': predictions})
     st.write(results)
 
 # Function to plot live line chart
@@ -99,15 +99,15 @@ def main():
     if st.button("Train Model"):
         model, X_test, y_test = train_model(data)
         predictions = make_predictions(model, X_test)
-    display_results(predictions, y_test)
-        
+        display_results(predictions, y_test)
+
+        # Only plot after predictions
+        plot_live_line_chart(data)
+
     # Display risk classification
     risk_classification = classify_risk(data['Volatility'].iloc[-1])
     st.sidebar.subheader("Risk Classification")
     st.sidebar.write(f"The risk of {selected_company} is {risk_classification}-risk.")
-    
-    # Plot live line chart
-    plot_live_line_chart(data)
 
 # Run the main function
 if __name__ == "__main__":
